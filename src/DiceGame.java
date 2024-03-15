@@ -1,58 +1,93 @@
 // Yasin Abdulkariem
 import javax.swing.*;
 import java.awt.*;
-    public class DiceGame {
+public class DiceGame {
+    private Die[] playerDice;
+    private Die[] dealerDice;
+    private int[] playerTotals;
+    private int[] dealerTotals;
+    private DiceGameView window;
 
-        // print the instructions
-        public static void intructions(){
-            System.out.println("Welcome to Best of 3!");
-            System.out.println("--> Here's how the game works: ");
-            System.out.println("--> The goal is to beat the AI in a best of 3 rolls");
-            System.out.println("--> Player with the higher value after 3 rolls wins");
-            System.out.println("--> Good luck!");
+    public DiceGame(){
+        this.window = new DiceGameView(this);
+        playerDice = new Die[3];
+        dealerDice = new Die[3];
+        playerTotals = new int[0];
+        dealerTotals = new int[0];
+
+        for(int i = 0; i < playerDice.length; i++){
+            playerDice[i] = new Die(6, window);
         }
-        // takes both totals of the players and compares
-        // print all 3 of the possible solutions
-        public void checkWin(int total1, int total2){
-
-            if(total1 > total2){
-                System.out.println("You Win! Nice Job!");
-            }
-            else if(total1 == total2){
-                System.out.println("You Tied! Try Again!");
-            }
-            else{
-                System.out.println("You Lose! Better luck next time!");
-            }
+        for(int i = 0; i < dealerDice.length; i++){
+            dealerDice[i] = new Die(6, window);
         }
-        public void play(){
-
-            DiceGame dg = new DiceGame();
-
-            Die d1 = new Die(6);
-            System.out.println(d1);
-            System.out.println("Rolling the die 3 times");
-            // gets the total after 3 rolls
-            int total1 = d1.roll() + d1.roll() + d1.roll();
-            System.out.println("You rolled a ");
-            System.out.println(total1);
-
-            System.out.println();
-
-            Die d2 = new Die(6);
-            System.out.println(d2);
-            System.out.println("Rolling the die 3 times");
-            // gets the total after 3 rolls
-            int total2 = d2.roll() + d2.roll() + d2.roll();
-            System.out.println("The Dealer rolled a ");
-            System.out.println(total2);
-            dg.checkWin(total1, total2);
-        }
-        public static void main(String[] args)
-        {
-            DiceGame game = new DiceGame();
-            DiceGame.intructions();
-            game.play();
-        }
-
     }
+
+    public Die[] getPlayerDice(){
+        return playerDice;
+    }
+    public Die[] getDealerDice() {
+        return dealerDice;
+    }
+    public int[] getPlayerTotals() {
+        return playerTotals;
+    }
+    public int[] getDealerTotals() {
+        return dealerTotals;
+    }
+
+    // takes both totals of the players and compares
+    // print all 3 of the possible solutions
+    public String checkWin(int[] playerTotals, int[] dealerTotals){
+        int playerTotal = 0;
+        int dealerTotal = 0;
+
+        for(int total : playerTotals){
+            playerTotal += total;
+        }
+        for(int total : dealerTotals){
+            dealerTotal += total;
+        }
+
+        if(playerTotal > dealerTotal){
+            return "You Win! Nice Job!";
+        }
+        else if(playerTotal == dealerTotal){
+            return "You Tied! Try Again!";
+        }
+        else{
+            return "You Lose! Better luck next time!";
+        }
+    }
+    //This rolls the dice
+    public int[] rollDice(Die[] dice){
+        int[] totals = new int[dice.length];
+        for(int i = 0; i < dice.length; i++){
+            totals[i] = dice[i].roll() + dice[i].roll() + dice[i].roll();
+        }
+        return totals;
+    }
+    public void printTotals(int[] totals){
+        for(int total : totals){
+            System.out.println(total);
+        }
+    }
+    public void play(){
+        System.out.println("Rolling the dice for the player and dealer...");
+        int[] playerTotals = rollDice(playerDice);
+        int[] dealerTotals = rollDice(dealerDice);
+
+        System.out.println("Player's totals: ");
+        printTotals(playerTotals);
+        System.out.println("Dealer's totals: ");
+        printTotals(dealerTotals);
+
+        checkWin(playerTotals, dealerTotals);
+        window.repaint();
+    }
+    public static void main(String[] args)
+    {
+        DiceGame game = new DiceGame();
+        game.play();
+    }
+}
